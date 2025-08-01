@@ -1,0 +1,240 @@
+<UserControl x:Class="KeyboardHeatmapPro.Views.TimelineView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Session List Panel -->
+        <Border Grid.Column="0" Background="{DynamicResource PanelBackgroundBrush}" 
+                BorderThickness="0,0,1,0" BorderBrush="{DynamicResource BorderBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Header -->
+                <Border Grid.Row="0" Background="{DynamicResource HeaderBackground}" Padding="15">
+                    <TextBlock Text="Session History" FontSize="18" FontWeight="Bold"/>
+                </Border>
+                
+                <!-- Search/Filter -->
+                <Grid Grid.Row="1" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBox Grid.Row="0" x:Name="SearchBox" 
+                             Tag="Search sessions..." 
+                             Style="{DynamicResource SearchTextBoxStyle}"
+                             Margin="0,0,0,5"/>
+                    
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <TextBlock Text="Sort by:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <ComboBox Width="100" Margin="0,0,5,0">
+                            <ComboBoxItem>Date</ComboBoxItem>
+                            <ComboBoxItem>Duration</ComboBoxItem>
+                            <ComboBoxItem>Activity</ComboBoxItem>
+                        </ComboBox>
+                        <CheckBox Content="Descending" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+                
+                <!-- Session List -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Sessions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource CardBackgroundBrush}" 
+                                        BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                                        CornerRadius="5" Margin="10,5" Padding="10"
+                                        Cursor="Hand">
+                                    <Border.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" 
+                                                    Command="{Binding DataContext.SelectSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                    </Border.InputBindings>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <TextBlock Grid.Row="0" FontWeight="Bold">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0:yyyy-MM-dd HH:mm}">
+                                                    <Binding Path="StartTime"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        
+                                        <TextBlock Grid.Row="1" Opacity="0.7">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="Duration: {0:hh\\:mm\\:ss}">
+                                                    <Binding Path="Duration"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        
+                                        <TextBlock Grid.Row="2" Opacity="0.7">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="Keystrokes: {0:N0}">
+                                                    <Binding Path="TotalKeystrokes"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        
+                                        <TextBlock Grid.Row="3" Text="{Binding ApplicationContext}" 
+                                                 Opacity="0.5" FontSize="11"/>
+                                    </Grid>
+                                    
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="View Details" 
+                                                    Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                            <MenuItem Header="Export Session" 
+                                                    Command="{Binding DataContext.ExportSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                            <Separator/>
+                                            <MenuItem Header="Delete Session" 
+                                                    Command="{Binding DataContext.DeleteSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+        
+        <!-- Session Detail View -->
+        <Grid Grid.Column="1">
+            <Grid Visibility="{Binding SelectedSession, Converter={StaticResource NullToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Session Header -->
+                <Border Grid.Row="0" Background="{DynamicResource HeaderBackground}" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0">
+                            <TextBlock FontSize="20" FontWeight="Bold">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Session: {0:yyyy-MM-dd HH:mm}">
+                                        <Binding Path="SelectedSession.StartTime"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock Opacity="0.7">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Duration: {0:hh\\:mm\\:ss} | Keystrokes: {1:N0}">
+                                        <Binding Path="SelectedSession.Duration"/>
+                                        <Binding Path="SelectedSession.TotalKeystrokes"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Play" Width="80" Margin="5"/>
+                            <Button Content="Export" Width="80" Margin="5"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+                <!-- Mini Heatmap -->
+                <Border Grid.Row="1" Background="{DynamicResource CardBackgroundBrush}" 
+                        Margin="10" CornerRadius="5" Padding="10">
+                    <Grid>
+                        <TextBlock Text="Session Heatmap" FontWeight="Bold" 
+                                 VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <!-- Placeholder for mini heatmap visualization -->
+                        <Rectangle Fill="{DynamicResource AccentBrush}" Opacity="0.1" 
+                                 Margin="0,30,0,0"/>
+                    </Grid>
+                </Border>
+                
+                <!-- Timeline Scrubber -->
+                <Border Grid.Row="2" Margin="10,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Text="Activity Timeline" FontWeight="Bold" Margin="0,0,0,5"/>
+                        
+                        <!-- Timeline visualization -->
+                        <Border Grid.Row="1" Height="50" Background="{DynamicResource CardBackgroundBrush}" 
+                                CornerRadius="3" BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                            <!-- Placeholder for timeline -->
+                        </Border>
+                        
+                        <!-- Playback controls -->
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
+                            <Button Content="⏮" Width="30" Height="30" Margin="2"/>
+                            <Button Content="⏸" Width="30" Height="30" Margin="2"/>
+                            <Button Content="⏯" Width="30" Height="30" Margin="2"/>
+                            <Button Content="⏭" Width="30" Height="30" Margin="2"/>
+                            <Slider Width="200" VerticalAlignment="Center" Margin="10,0"/>
+                            <TextBlock Text="1.0x" VerticalAlignment="Center" Margin="5,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+                <!-- Activity Stream -->
+                <Border Grid.Row="3" Background="{DynamicResource CardBackgroundBrush}" 
+                        Margin="10" CornerRadius="5" Padding="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Text="Activity Stream" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl>
+                                <!-- Activity items -->
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+            
+            <!-- Empty State -->
+            <Grid Visibility="{Binding SelectedSession, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverse}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.5">
+                    <TextBlock Text="No Session Selected" FontSize="24" FontWeight="Light" 
+                             HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Text="Select a session from the list to view details" 
+                             HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

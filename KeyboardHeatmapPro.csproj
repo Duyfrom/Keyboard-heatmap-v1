@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <!-- <ApplicationIcon>Resources\app.ico</ApplicationIcon> -->
+    <Product>KeyboardHeatmap Pro</Product>
+    <Company>KeyboardHeatmap</Company>
+    <Copyright>Copyright © 2025</Copyright>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="OxyPlot.Wpf" Version="2.1.2" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="LiteDB" Version="5.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\**\*" />
+    <Resource Include="Resources\**\*" />
+  </ItemGroup>
+
+</Project>

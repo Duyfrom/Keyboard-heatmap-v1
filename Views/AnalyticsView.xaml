@@ -1,0 +1,148 @@
+<UserControl x:Class="KeyboardHeatmapPro.Views.AnalyticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:oxy="http://oxyplot.org/wpf"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1000">
+    
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20">
+                <!-- Summary Dashboard -->
+                <TextBlock Text="Analytics Dashboard" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+                
+                <!-- Time Range Selector -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <TextBlock Text="Time Range:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox ItemsSource="{Binding TimeRanges}" 
+                              SelectedItem="{Binding SelectedTimeRange}" 
+                              Width="150"/>
+                    <Button Content="Refresh" Command="{Binding LoadAnalyticsCommand}" 
+                            Margin="10,0,0,0" Width="80"/>
+                </StackPanel>
+                
+                <!-- Key Metrics Cards -->
+                <UniformGrid Rows="1" Columns="4" Margin="0,0,0,20">
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="20"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <StackPanel>
+                            <TextBlock Text="Total Keystrokes" FontSize="14" Opacity="0.7"/>
+                            <TextBlock Text="{Binding TotalKeystrokes, StringFormat=N0}" 
+                                     FontSize="32" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                            <TextBlock Text="All time" FontSize="12" Opacity="0.5"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="20"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <StackPanel>
+                            <TextBlock Text="Daily Average" FontSize="14" Opacity="0.7"/>
+                            <TextBlock Text="{Binding AverageDailyUsage, StringFormat=N0}" 
+                                     FontSize="32" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                            <TextBlock Text="Keys/day" FontSize="12" Opacity="0.5"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="20"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <StackPanel>
+                            <TextBlock Text="Most Active Key" FontSize="14" Opacity="0.7"/>
+                            <TextBlock Text="{Binding MostActiveKey}" 
+                                     FontSize="32" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                            <TextBlock Text="Top key" FontSize="12" Opacity="0.5"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="20"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <StackPanel>
+                            <TextBlock Text="Peak Usage Time" FontSize="14" Opacity="0.7"/>
+                            <TextBlock Text="{Binding PeakUsageTime, StringFormat='{}{0:hh\\:mm}'}" 
+                                     FontSize="32" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                            <TextBlock Text="Most active" FontSize="12" Opacity="0.5"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+                
+                <!-- Charts Section -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="300"/>
+                        <RowDefinition Height="300"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Usage Over Time Chart -->
+                    <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                            Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="10"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Usage Over Time" FontSize="16" FontWeight="Bold" Margin="5"/>
+                            <oxy:PlotView Grid.Row="1" Model="{Binding UsageOverTimeModel}" Margin="5"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Top Keys Chart -->
+                    <Border Grid.Row="1" Grid.Column="0" 
+                            Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="10"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Top 20 Keys" FontSize="16" FontWeight="Bold" Margin="5"/>
+                            <oxy:PlotView Grid.Row="1" Model="{Binding TopKeysModel}" Margin="5"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Heat Calendar -->
+                    <Border Grid.Row="1" Grid.Column="1" 
+                            Background="{DynamicResource CardBackgroundBrush}" 
+                            CornerRadius="5" Margin="5" Padding="10"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Activity Calendar" FontSize="16" FontWeight="Bold" Margin="5"/>
+                            <oxy:PlotView Grid.Row="1" Model="{Binding HeatCalendarModel}" Margin="5"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+                
+                <!-- Export Options -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                    <Button Content="Export to CSV" Width="120" Margin="5"/>
+                    <Button Content="Export to Excel" Width="120" Margin="5"/>
+                    <Button Content="Export to PDF" Width="120" Margin="5"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Loading Overlay -->
+        <Border Background="#80000000" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
+                <TextBlock Text="Loading analytics data..." Foreground="White" 
+                         HorizontalAlignment="Center" Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
